@@ -21,9 +21,23 @@ class DataService:
                 },
                 "456": {
                     "id": "456",
-                    "age": 45,
+                    "age": 20,
                     "gender": "Male",
-                    "conditions": None,
+                    "conditions": "High Cholesterol",
+                    "created_at": "2024-02-20T14:15:00Z"
+                },                
+                "789": {
+                    "id": "789",
+                    "age": 30,
+                    "gender": "Female",
+                    "conditions": "Thyroid Disorder",
+                    "created_at": "2024-02-20T14:15:00Z"
+                },
+                "901": {
+                    "id": "901",
+                    "age": 60,
+                    "gender": "Female",
+                    "conditions": "Migaraine",
                     "created_at": "2024-02-20T14:15:00Z"
                 }
             },

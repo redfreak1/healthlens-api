@@ -38,7 +38,9 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
         if cached_response:
             # Log cache hit
             await audit_service.log_interaction(user_id, "adaptive_view", "cache_hit", time.time() - start_time)
-            return AdaptiveViewResponse(**cached_response, cache_hit=True)
+            # Update cache_hit flag for cached response
+            cached_response['cache_hit'] = True
+            return AdaptiveViewResponse(**cached_response)
         
         # Step 2: Cache miss - fetch fresh data
         # Fetch user profile + lab data + history
@@ -53,8 +55,12 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
             conditions=user_profile.conditions
         )
         
+        print(f"DEBUG: Determined persona: {persona}")
+
         # Step 4: Select template for persona
         template = await template_service.get_template_for_persona(persona)
+
+        print(f"DEBUG: Selected template: {template}")  # Add this debug line
         
         # Step 5: Call AI service with persona-specific prompt
         ai_content = await ai_service.generate_content(
@@ -68,6 +74,7 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
             }
         )
         
+        print(f"DEBUG: AI content ui_components: {ai_content.ui_components}")  # Add this debug line
         # Step 6: Structure response with UI components
         response = AdaptiveViewResponse(
             persona=persona,

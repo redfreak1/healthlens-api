@@ -138,6 +138,108 @@ class PersonaService:
                     "minimal_details": True,
                     "complexity_level": "low"
                 }
+            },
+            PersonaType.BALANCED: {
+                "name": "THE BALANCED USER",
+                "category": "Balanced Health Management",
+                "description": "You take a moderate approach to health management, balancing detail with simplicity",
+                "strengths": ["Practical decisions", "Balanced information needs", "Flexible approach"],
+                "focus_areas": ["Maintain consistency", "Find sustainable habits"],
+                "dashboard_type": "Balanced view with moderate detail and clear summaries",
+                "ui_preferences": {
+                    "show_detailed_charts": True,
+                    "show_trends": True,
+                    "show_raw_data": False,
+                    "complexity_level": "medium",
+                    "show_medical_context": True,
+                    "highlight_abnormal": True,
+                    "simple_language": False
+                }
+            },
+            PersonaType.GOAL_FOCUSED: {
+                "name": "THE GOAL SETTER",
+                "category": "Goal-Oriented Health",
+                "description": "You are motivated by setting and achieving specific health goals",
+                "strengths": ["Target achievement", "Motivation", "Progress tracking"],
+                "focus_areas": ["Realistic goal setting", "Long-term sustainability"],
+                "dashboard_type": "Goal-focused dashboard with progress tracking",
+                "ui_preferences": {
+                    "show_progress_bars": True,
+                    "highlight_goals": True,
+                    "show_achievements": True,
+                    "complexity_level": "medium"
+                }
+            },
+            PersonaType.ANALYTICAL: {
+                "name": "THE ANALYST",
+                "category": "Data-Driven Health",
+                "description": "You prefer detailed analysis and comprehensive data views",
+                "strengths": ["Data interpretation", "Pattern recognition", "Thorough analysis"],
+                "focus_areas": ["Actionable insights", "Avoiding analysis paralysis"],
+                "dashboard_type": "Analytics-heavy dashboard with detailed charts and trends",
+                "ui_preferences": {
+                    "show_detailed_charts": True,
+                    "show_trends": True,
+                    "show_raw_data": True,
+                    "complexity_level": "high",
+                    "show_correlations": True
+                }
+            },
+            PersonaType.FAST_ACTION: {
+                "name": "THE EXECUTOR",
+                "category": "Immediate Action Health",
+                "description": "You prefer quick, actionable health insights with immediate next steps",
+                "strengths": ["Quick implementation", "Action orientation", "Decisiveness"],
+                "focus_areas": ["Comprehensive planning", "Long-term thinking"],
+                "dashboard_type": "Action-focused dashboard with immediate recommendations",
+                "ui_preferences": {
+                    "show_action_items": True,
+                    "highlight_urgent": True,
+                    "minimal_analysis": True,
+                    "complexity_level": "low"
+                }
+            },
+            PersonaType.INTERMEDIATE: {
+                "name": "THE STEADY TRACKER",
+                "category": "Consistent Health Management",
+                "description": "You maintain steady engagement with moderate detail preferences",
+                "strengths": ["Consistency", "Steady progress", "Balanced approach"],
+                "focus_areas": ["Avoiding monotony", "Finding motivation"],
+                "dashboard_type": "Standard dashboard with consistent features",
+                "ui_preferences": {
+                    "show_trends": True,
+                    "moderate_detail": True,
+                    "consistent_layout": True,
+                    "complexity_level": "medium"
+                }
+            },
+            PersonaType.CASUAL: {
+                "name": "THE CASUAL USER",
+                "category": "Low-Maintenance Health",
+                "description": "You prefer simple, low-effort health tracking with minimal complexity",
+                "strengths": ["Simplicity", "Low maintenance", "Easy adoption"],
+                "focus_areas": ["Staying engaged", "Finding value in simplicity"],
+                "dashboard_type": "Simple dashboard with essential information only",
+                "ui_preferences": {
+                    "simple_language": True,
+                    "minimal_features": True,
+                    "easy_navigation": True,
+                    "complexity_level": "low"
+                }
+            },
+            PersonaType.PASSIVE: {
+                "name": "THE OBSERVER",
+                "category": "Passive Health Monitoring",
+                "description": "You prefer automated tracking with minimal active engagement",
+                "strengths": ["Automated data collection", "Background monitoring", "Low effort"],
+                "focus_areas": ["Relevant notifications", "When to take action"],
+                "dashboard_type": "Automated dashboard with smart alerts and summaries",
+                "ui_preferences": {
+                    "automated_insights": True,
+                    "minimal_interaction": True,
+                    "smart_alerts": True,
+                    "complexity_level": "low"
+                }
             }
         }
         

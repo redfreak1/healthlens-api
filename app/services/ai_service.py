@@ -80,7 +80,7 @@ class AIService:
         """Generate content based on persona type"""
         
         if len(abnormal_results) == 0:
-            return self._generate_normal_results_content(persona)
+            return await self._generate_normal_results_content(persona)
         
         if persona == PersonaType.HEALTH_CONSCIOUS:
             # Senior Sue - simple, caring language
@@ -177,9 +177,8 @@ class AIService:
             ]
         
         recommendations = []
-        
         # Common recommendations based on abnormal results
-        if any(r.name.lower().contains("glucose") for r in abnormal_results):
+        if any("glucose" in r.name.lower() for r in abnormal_results):
             if persona == PersonaType.HEALTH_CONSCIOUS:
                 recommendations.append("Monitor your blood sugar levels daily")
                 recommendations.append("Follow your diabetes management plan")
@@ -188,15 +187,12 @@ class AIService:
                 recommendations.append("Review carb intake this week")
             else:
                 recommendations.append("Consider glucose monitoring")
-        
-        if any(r.name.lower().contains("cholesterol") for r in abnormal_results):
+        if any("cholesterol" in r.name.lower() for r in abnormal_results):
             recommendations.append("Consider heart-healthy diet modifications")
             recommendations.append("Discuss cholesterol management with your doctor")
-        
-        if any(r.name.lower().contains("blood") for r in abnormal_results):
+        if any("blood" in r.name.lower() for r in abnormal_results):
             recommendations.append("Follow up with your healthcare provider")
             recommendations.append("Consider additional blood work if recommended")
-        
         # Persona-specific additions
         if persona == PersonaType.TECH_SAVVY:
             recommendations.append("Sync results with your health tracking app")
@@ -204,7 +200,6 @@ class AIService:
         elif persona == PersonaType.DETAIL_ORIENTED:
             recommendations.append("Track trends over time for pattern analysis")
             recommendations.append("Request historical lab data for comparison")
-        
         return recommendations[:4]  # Limit to 4 recommendations
     
     def _get_simple_explanation(self, test_name: str) -> str:
