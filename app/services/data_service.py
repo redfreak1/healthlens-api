@@ -45,7 +45,7 @@ class DataService:
                 "123": [
                     {
                         "name": "Glucose",
-                        "value": 98.0,
+                        "value": 90.0,
                         "unit": "mg/dL",
                         "reference_range": {"min": 70.0, "max": 99.0},
                         "category": "Metabolic Panel",
@@ -94,6 +94,88 @@ class DataService:
                     {
                         "name": "Sodium",
                         "value": 138.0,
+                        "unit": "mmol/L",
+                        "reference_range": {"min": 136.0, "max": 145.0},
+                        "category": "Metabolic Panel",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Potassium",
+                        "value": 3.2,
+                        "unit": "mmol/L",
+                        "reference_range": {"min": 3.5, "max": 5.1},
+                        "category": "Metabolic Panel",
+                        "status": "low"
+                    },
+                    {
+                        "name": "Creatinine",
+                        "value": 1.0,
+                        "unit": "mg/dL",
+                        "reference_range": {"min": 0.7, "max": 1.3},
+                        "category": "Metabolic Panel",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Total Cholesterol",
+                        "value": 195.0,
+                        "unit": "mg/dL",
+                        "reference_range": {"min": 0.0, "max": 200.0},
+                        "category": "Lipid Panel",
+                        "status": "normal"
+                    }
+                ],
+                "456": [
+                    {
+                        "name": "Glucose",
+                        "value": 95.0,
+                        "unit": "mg/dL",
+                        "reference_range": {"min": 70.0, "max": 99.0},
+                        "category": "Metabolic Panel",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "White Blood Cell Count",
+                        "value": 11.2,
+                        "unit": "K/uL",
+                        "reference_range": {"min": 4.5, "max": 11.0},
+                        "category": "Complete Blood Count",
+                        "status": "high"
+                    },
+                    {
+                        "name": "Red Blood Cell Count",
+                        "value": 4.8,
+                        "unit": "M/uL",
+                        "reference_range": {"min": 4.5, "max": 5.9},
+                        "category": "Complete Blood Count",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Hemoglobin",
+                        "value": 14.2,
+                        "unit": "g/dL",
+                        "reference_range": {"min": 13.5, "max": 17.5},
+                        "category": "Complete Blood Count",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Hematocrit",
+                        "value": 42.1,
+                        "unit": "%",
+                        "reference_range": {"min": 38.8, "max": 50.0},
+                        "category": "Complete Blood Count",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Platelet Count",
+                        "value": 210.0,
+                        "unit": "K/uL",
+                        "reference_range": {"min": 150.0, "max": 400.0},
+                        "category": "Complete Blood Count",
+                        "status": "normal"
+                    },
+                    {
+                        "name": "Sodium",
+                        "value": 148.0,
                         "unit": "mmol/L",
                         "reference_range": {"min": 136.0, "max": 145.0},
                         "category": "Metabolic Panel",

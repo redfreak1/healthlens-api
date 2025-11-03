@@ -21,7 +21,7 @@ audit_service = AuditService()
 behavior_service = BehaviorService()
 
 @router.get("/adaptive-view")
-async def get_adaptive_view(user_id: str, report_id: str = None):
+async def get_adaptive_view(user_id: str, report_id: str = None, bypass_cache: bool = False):
     """
     Main adaptive view endpoint that implements the sequence diagram flow:
     1. Check cache for existing response
@@ -31,9 +31,12 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
     start_time = time.time()
     
     try:
-        # Step 1: Check cache
+        # Step 1: Check cache (unless bypassed)
         cache_key = f"{user_id}:{report_id or 'default'}"
-        cached_response = await cache_service.get(cache_key)
+        cached_response = None
+        
+        if not bypass_cache:
+            cached_response = await cache_service.get(cache_key)
         
         if cached_response:
             # Log cache hit
@@ -54,13 +57,9 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
             history=user_history,
             conditions=user_profile.conditions
         )
-        
-        print(f"DEBUG: Determined persona: {persona}")
 
         # Step 4: Select template for persona
         template = await template_service.get_template_for_persona(persona)
-
-        print(f"DEBUG: Selected template: {template}")  # Add this debug line
         
         # Step 5: Call AI service with persona-specific prompt
         ai_content = await ai_service.generate_content(
@@ -74,7 +73,6 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
             }
         )
         
-        print(f"DEBUG: AI content ui_components: {ai_content.ui_components}")  # Add this debug line
         # Step 6: Structure response with UI components
         response = AdaptiveViewResponse(
             persona=persona,
@@ -84,8 +82,8 @@ async def get_adaptive_view(user_id: str, report_id: str = None):
             cache_hit=False
         )
         
-        # Step 7: Cache response (1 hour TTL)
-        await cache_service.set(cache_key, response.dict(), ttl=3600)
+        # Step 7: Cache response (1 minute TTL for development)
+        await cache_service.set(cache_key, response.dict(), ttl=60)
         
         # Step 8: Log full interaction
         await audit_service.log_interaction(
