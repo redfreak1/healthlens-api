@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>HealthLens API CORS Test</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Test the adaptive-view endpoint that was failing
+                const response = await fetch('http://10.44.215.180:4192/api/v1/adaptive-view?user_id=456&report_id=456');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <h3>✅ SUCCESS!</h3>
+                        <p>CORS is working correctly!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>❌ HTTP Error</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Message: ${response.statusText}</p>
+                    `;
+                }
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    resultDiv.innerHTML = `
+                        <h3>❌ CORS Error</h3>
+                        <p>CORS is still blocking the request.</p>
+                        <p>Error: ${error.message}</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>❌ Network Error</h3>
+                        <p>Error: ${error.message}</p>
+                    `;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

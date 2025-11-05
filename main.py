@@ -5,6 +5,10 @@ from app.api.persona import router as persona_router
 from app.api.data import router as data_router
 from app.api.ai import router as ai_router
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 # Import test router for debugging
 try:
     from app.api.test import router as test_router
@@ -26,13 +30,35 @@ try:
 except ImportError:
     PERSONA_SIMPLE_AVAILABLE = False
 
+# Import Gemini test router
+try:
+    from app.api.gemini_test import router as gemini_test_router
+    GEMINI_TEST_AVAILABLE = True
+except ImportError:
+    GEMINI_TEST_AVAILABLE = False
+
 # Import settings with error handling
 try:
     from app.config import settings
     cors_origins = settings.cors_origins
+    # Ensure localhost:8080 is included
+    if "http://localhost:8080" not in cors_origins:
+        cors_origins.append("http://localhost:8080")
 except ImportError:
     # Fallback if settings can't be imported
-    cors_origins = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"]
+    cors_origins = [
+        "http://localhost:8080",  # Frontend origin causing CORS issue
+        "http://localhost:5173", 
+        "http://localhost:3000", 
+        "https://localhost:3000",
+        "https://localhost:5173",
+        "https://healthlens-ui-main-320501699885.us-central1.run.app",  # Production frontend
+        "http://10.44.215.180:4192"
+    ]
+
+# Add production frontend URL to existing cors_origins if it exists
+if cors_origins and "https://healthlens-ui-main-320501699885.us-central1.run.app" not in cors_origins:
+    cors_origins.append("https://healthlens-ui-main-320501699885.us-central1.run.app")
 
 app = FastAPI(
     title="HealthLens API",
@@ -40,13 +66,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware
+# CORS middleware - Updated to ensure production frontend is included
+print(f"🔧 CORS Origins: {cors_origins}")  # Debug info
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=86400,  # Cache preflight for 24 hours
 )
 
 # Include routers
@@ -67,6 +96,10 @@ if PERSONA_FIXED_AVAILABLE:
 if PERSONA_SIMPLE_AVAILABLE:
     app.include_router(persona_simple_router, prefix="/api/v1/persona-simple")
 
+# Include Gemini test router if available
+if GEMINI_TEST_AVAILABLE:
+    app.include_router(gemini_test_router, prefix="/api/v1")
+
 @app.get("/health")
 async def health_check():
     """Simple health check endpoint"""
@@ -74,13 +107,10 @@ async def health_check():
         "status": "healthy",
         "service": "HealthLens API",
         "version": "1.0.0",
-        "message": "API is running successfully"
+        "message": "API is running successfully",
+        "cors_origins": cors_origins  # Debug info
     }
 
 @app.get("/")
 async def root():
     return {"message": "HealthLens API", "version": "1.0.0"}
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}

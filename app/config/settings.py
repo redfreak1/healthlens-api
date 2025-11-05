@@ -1,11 +1,11 @@
 """
-HealthLens API Configuration with Corporate Proxy Support
+HealthLens API Configuration with Corporate Proxy Support and Gemini AI
 """
 import os
 from typing import Dict, List
 
 class Settings:
-    """Application settings with proxy configuration"""
+    """Application settings with proxy configuration and Gemini AI"""
     
     # API Configuration
     API_HOST: str = "localhost"
@@ -24,6 +24,7 @@ class Settings:
         "http://localhost:8080",  # Alternative dev server
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
+        "https://healthlens-ui-main-320501699885.us-central1.run.app",  # Cloud Run frontend
     ]
     
     # Redis Configuration (optional)
@@ -34,6 +35,14 @@ class Settings:
     
     # Database Configuration
     DATABASE_URL: str = "sqlite:///./healthlens.db"
+    
+    # Gemini AI Configuration
+    GEMINI_API_KEY: str = os.getenv('GEMINI_API_KEY', '')
+    GEMINI_MODEL: str = os.getenv('GEMINI_MODEL', 'gemini-pro')
+    GEMINI_ENDPOINT: str = os.getenv('GEMINI_ENDPOINT', 'https://generativelanguage.googleapis.com/v1beta/models')
+    
+    # Cache Configuration
+    CACHE_TTL: int = int(os.getenv('CACHE_TTL', '3600'))
     
     @property
     def proxy_dict(self) -> Dict[str, str]:
