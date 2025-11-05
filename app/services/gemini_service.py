@@ -289,7 +289,7 @@ class GeminiService:
         persona_instruction = persona_instructions.get(persona_type, persona_instructions["simple"])
         
         prompt = f"""
-        You are a health AI assistant providing personalized health insights. Analyze the following health data and provide insights in JSON format.
+        You are a health AI assistant providing personalized health insights. Analyze the following health data and provide insights ONLY in valid JSON format.
 
         Patient Information:
         - Age: {age}
@@ -303,12 +303,13 @@ class GeminiService:
 
         Instructions: {persona_instruction}
 
-        Please provide your response in the following JSON format:
+        CRITICAL: Respond with ONLY valid JSON in the exact format below. Do not include any text before or after the JSON:
+
         {{
             "overall_health_score": <number between 0-100>,
             "key_insights": [
                 "insight 1",
-                "insight 2",
+                "insight 2", 
                 "insight 3"
             ],
             "recommendations": [
@@ -331,12 +332,14 @@ class GeminiService:
             ]
         }}
 
-        Important: 
+        IMPORTANT RULES:
+        - Return ONLY valid JSON, no additional text
         - Base insights only on the provided data
-        - If data is limited, acknowledge limitations
+        - If data is limited, acknowledge limitations in the insights
         - Provide general wellness advice when specific medical data is unavailable
         - Do not provide specific medical diagnoses
         - Encourage consultation with healthcare providers for medical concerns
+        - Health score should reflect the lab results (higher for normal values, lower for abnormal)
         """
         
         return prompt
@@ -344,13 +347,13 @@ class GeminiService:
     def _parse_health_insights(self, response_text: str) -> Dict[str, Any]:
         """Parse the AI response and extract structured insights"""
         try:
-            # Try to extract JSON from response
-            start_idx = response_text.find('{')
-            end_idx = response_text.rfind('}') + 1
-            
-            if start_idx != -1 and end_idx != -1:
-                json_str = response_text[start_idx:end_idx]
+            # Try to find JSON in the response using regex
+            import re
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
                 insights = json.loads(json_str)
+                logger.info("✅ Successfully parsed JSON from Gemini response")
                 
                 # Validate required fields
                 required_fields = ['overall_health_score', 'key_insights', 'recommendations', 'summary']
@@ -360,36 +363,65 @@ class GeminiService:
                 
                 return insights
             else:
-                # If no JSON found, create structured response from text
+                logger.warning("⚠️ No JSON found in response, creating structured response")
                 return self._create_structured_response_from_text(response_text)
                 
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse JSON response, creating structured response from text")
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ JSON parsing failed: {e}")
+            logger.error(f"Response text: {response_text[:500]}...")
             return self._create_structured_response_from_text(response_text)
     
     def _create_structured_response_from_text(self, text: str) -> Dict[str, Any]:
         """Create structured response when JSON parsing fails"""
-        return {
-            "overall_health_score": 75,
-            "key_insights": [
-                "Health analysis completed based on available data",
-                "Personalized insights generated using AI",
-                "Recommendations provided for health optimization"
-            ],
-            "recommendations": [
-                "Maintain regular health checkups",
-                "Follow a balanced diet and exercise routine",
+        import re
+        
+        # Extract health score if present
+        health_score_match = re.search(r'Health Score:\s*(\d+)/100', text)
+        health_score = int(health_score_match.group(1)) if health_score_match else 75
+        
+        # Extract insights from text
+        lines = text.split('\n')
+        insights = []
+        recommendations = []
+        
+        for line in lines:
+            line = line.strip()
+            if line and len(line) > 10:
+                if any(keyword in line.lower() for keyword in ['high', 'low', 'elevated', 'abnormal', 'normal']):
+                    insights.append(line)
+                elif any(keyword in line.lower() for keyword in ['recommend', 'should', 'consider', 'suggest']):
+                    recommendations.append(line)
+        
+        # Default values if extraction fails
+        if not insights:
+            insights = [
+                "AI health analysis completed successfully",
+                "Health data has been processed and reviewed",
+                "Personalized insights generated based on available data"
+            ]
+        
+        if not recommendations:
+            recommendations = [
+                "Schedule follow-up consultation with healthcare provider",
+                "Maintain regular exercise routine and balanced nutrition",
                 "Monitor key health indicators regularly"
+            ]
+        
+        return {
+            "overall_health_score": health_score,
+            "key_insights": insights[:3],
+            "recommendations": recommendations[:3],
+            "risk_factors": [
+                "Consult healthcare provider for detailed analysis"
             ],
-            "risk_factors": [],
             "positive_indicators": [
                 "Active health monitoring",
-                "Engagement with health data"
+                "Engagement with health data analysis"
             ],
-            "summary": text[:200] + "..." if len(text) > 200 else text,
+            "summary": text[:300] + "..." if len(text) > 300 else text,
             "next_steps": [
-                "Continue monitoring health metrics",
-                "Consult healthcare provider for detailed analysis"
+                "Review results with healthcare provider",
+                "Continue monitoring health metrics"
             ]
         }
     
