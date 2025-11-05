@@ -102,7 +102,15 @@ class GeminiService:
                 verify=False
             )
         
-        if response.status_code != 200:
+        if response.status_code == 403:
+            error_msg = response.text
+            if "leaked" in error_msg.lower() or "reported" in error_msg.lower():
+                logger.error("🔑 API key has been reported as leaked - please generate a new key")
+                raise Exception(f"API key leaked: {error_msg}")
+            else:
+                logger.error("🚫 API access forbidden - check permissions")
+                raise Exception(f"API access forbidden: {error_msg}")
+        elif response.status_code != 200:
             raise Exception(f"REST API test failed: {response.status_code} - {response.text}")
         
         logger.info("✅ Gemini REST API connection test successful")
@@ -223,6 +231,13 @@ class GeminiService:
                     
                     raise Exception("No valid text content in response")
                     
+                elif response.status_code == 403:
+                    error_msg = response.text
+                    if "leaked" in error_msg.lower() or "reported" in error_msg.lower():
+                        logger.error("🔑 API key has been reported as leaked - stopping all attempts")
+                        raise Exception(f"API key leaked: {error_msg}")
+                    else:
+                        raise Exception(f"API access forbidden: {error_msg}")
                 else:
                     raise Exception(f"HTTP {response.status_code}: {response.text}")
                     
